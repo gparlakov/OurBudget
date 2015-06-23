@@ -13,14 +13,14 @@ public class OptionsMenuHandler {
     final public void Init(CharSequence[] ids,  Method[] methodHandler){
         this.Ids = ids;
         this.Methods = methodHandler;
-    };
+    }
 
     public void onClick(CharSequence id, Object... argsss){
-        for (int i = 0; i < this.Ids.size(); i++) {
+        /*for (int i = 0; i < this.Ids.size(); i++) {
             if (id.equals(this.Ids[i])){
                 Method method = this.Methods[i];
                 method.invoke(this, argsss);
             }
-        }
+        }*/
     }
 }

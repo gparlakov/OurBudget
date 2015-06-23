@@ -10,4 +10,9 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     public ApplicationTest() {
         super(Application.class);
     }
+
+    public void testApp1(){
+        /*MainActivity te = new MainActivity();
+        te.*/
+    }
 }
