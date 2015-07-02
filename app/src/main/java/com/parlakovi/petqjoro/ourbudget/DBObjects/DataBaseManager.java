@@ -37,22 +37,6 @@ public class DataBaseManager extends OrmLiteSqliteOpenHelper {
 
             TableUtils.createTableIfNotExists(connectionSource, ExpenseEdit.class);
 
-            Dao<User, Integer> daoUser = DataAccessObjectsManager.getDaoUser(connectionSource);
-
-            Date now = Calendar.getInstance().getTime();
-            User user = new User();
-            user.setName("Petq");
-            user.setCreateTimeStamp(now);
-            user.setSyncTimeStamp(now);
-            daoUser.create(user);
-
-            User user1 = new User();
-            user1.setName("Joro");
-            user1.setCreateTimeStamp(now);
-            user1.setSyncTimeStamp(now);
-            daoUser.create(user1);
-
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -63,5 +47,20 @@ public class DataBaseManager extends OrmLiteSqliteOpenHelper {
 
     }
 
+    private void initialDataForUsers() throws SQLException{
 
+        Dao<User, Integer> daoUser = DataAccessObjectsManager.getDaoUser(connectionSource);
+        Date now = Calendar.getInstance().getTime();
+        User user = new User();
+        user.setName("Petq");
+        user.setCreateTimeStamp(now);
+        user.setSyncTimeStamp(now);
+        daoUser.create(user);
+
+        User user1 = new User();
+        user1.setName("Joro");
+        user1.setCreateTimeStamp(now);
+        user1.setSyncTimeStamp(now);
+        daoUser.create(user1);
+    }
 }

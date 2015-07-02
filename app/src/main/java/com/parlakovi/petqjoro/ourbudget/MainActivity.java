@@ -1,9 +1,8 @@
 package com.parlakovi.petqjoro.ourbudget;
 
-import android.os.Environment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
+import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,54 +14,74 @@ import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
-import com.parlakovi.petqjoro.ourbudget.DBObjects.DataAccessObjectsManager;
 import com.parlakovi.petqjoro.ourbudget.DBObjects.DataBaseManager;
 import com.parlakovi.petqjoro.ourbudget.DBObjects.User;
-import com.parlakovi.petqjoro.ourbudget.UI.Adapters.IArrayAdapterItem;
 import com.parlakovi.petqjoro.ourbudget.UI.Adapters.SimpleTextArrayAdapter;
 
 import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
 
 
 public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
 
-    @Override
-     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    private final static String CHOSEN_USER = "CHOSEN_USER";
 
-        try {
+    private Spinner mSpinner;
+    private Spinner getUserSelectSpinner(){
+        if (mSpinner == null){
+            mSpinner = (Spinner) findViewById(R.id.spinner_payer);
 
-            Dao<User, Integer> daoUser = getHelper().getDao(User.class);
-            Collection<User> users = daoUser.queryForAll();
-
-            SimpleTextArrayAdapter textAdapter =
-                    new SimpleTextArrayAdapter(this, R.layout.simple_text_view_title, R.id.simple_text_view_title_firstTextView);
-            final Spinner spinner = (Spinner)findViewById(R.id.spinner_payer);
-            spinner.setAdapter(textAdapter);
-
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
-                                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if (id == -1){
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (id == -1) {
                         Toast.makeText(parent.getContext(), "selected add new", Toast.LENGTH_SHORT).show();
+                        getUserSelectSpinner().setSelection(0, false);
                     }
-                    spinner.setSelection(0, false);
+
+                    /*mSpinner.setSelection(position);*/
+                    writeDownSelection();
                 }
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
                 }
             });
-
-            textAdapter.addAll(users);
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+        return  mSpinner;
+    }
+
+
+
+    private void writeDownSelection() {
+        Log.i(Global.Log_Tag,  getUserSelectSpinner().getSelectedItemId()+ "");
+    }
+
+    @Override
+     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        if (savedInstanceState == null) {
+            try {
+                Dao<User, Integer> daoUser = getHelper().getDao(User.class);
+                Collection<User> users = daoUser.queryForAll();
+
+                SimpleTextArrayAdapter textAdapter =
+                        new SimpleTextArrayAdapter(this, R.layout.simple_text_view_title, R.id.simple_text_view_title_firstTextView);
+
+                getUserSelectSpinner().setAdapter(textAdapter);
+
+                textAdapter.addAll(users);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -74,16 +93,27 @@ public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        boolean handled = false;
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id){
+            case R.id.action_settings: {
+                // call settings activity/fragment
+                handled = true;
+                break;
+            }
+            default:{
+                handled = super.onOptionsItemSelected(item);
+            }
         }
 
-        return super.onOptionsItemSelected(item);
+        return handled;
+    }
+
+    @Override
+     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(CHOSEN_USER, 0);
     }
 }
