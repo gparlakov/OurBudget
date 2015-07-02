@@ -4,10 +4,13 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by gparl_000 on 6/28/2015.
@@ -34,6 +37,22 @@ public class DataBaseManager extends OrmLiteSqliteOpenHelper {
 
             TableUtils.createTableIfNotExists(connectionSource, ExpenseEdit.class);
 
+            Dao<User, Integer> daoUser = DataAccessObjectsManager.getDaoUser(connectionSource);
+
+            Date now = Calendar.getInstance().getTime();
+            User user = new User();
+            user.setName("Petq");
+            user.setCreateTimeStamp(now);
+            user.setSyncTimeStamp(now);
+            daoUser.create(user);
+
+            User user1 = new User();
+            user1.setName("Joro");
+            user1.setCreateTimeStamp(now);
+            user1.setSyncTimeStamp(now);
+            daoUser.create(user1);
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -43,4 +62,6 @@ public class DataBaseManager extends OrmLiteSqliteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, ConnectionSource connectionSource, int i, int i1) {
 
     }
+
+
 }

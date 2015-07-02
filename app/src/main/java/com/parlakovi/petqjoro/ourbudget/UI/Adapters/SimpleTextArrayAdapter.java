@@ -18,8 +18,9 @@ public class SimpleTextArrayAdapter extends ArrayAdapter<IArrayAdapterItem> {
 
     private final int resourceIdForRow;
 
-    public SimpleTextArrayAdapter(Context context, int resourceIdForRow) {
-        super(context, 0);
+    public SimpleTextArrayAdapter(Context context, int resourceIdForRow, int textViewResId) {
+        super(context, resourceIdForRow, textViewResId);
+
         this.resourceIdForRow = resourceIdForRow;
     }
 
@@ -30,7 +31,7 @@ public class SimpleTextArrayAdapter extends ArrayAdapter<IArrayAdapterItem> {
 
         if (position == this.getCount()){
             // add the "Create new option here"
-           viewHolder.titleView.setText("Add new");
+            viewHolder.titleView.setText("Add new");
         }
         else {
             IArrayAdapterItem entry = getItem(position);
@@ -41,20 +42,30 @@ public class SimpleTextArrayAdapter extends ArrayAdapter<IArrayAdapterItem> {
         return  workingView;
     }
 
-/*    @Override
+    @Override
     public long getItemId(int position) {
-        if (position < this.getCount()){
+        if (position < this.getCount() - 1){
             return super.getItemId(position);
         }
         else {
             return -1;
         }
-    }*/
+    }
 
-/*    @Override
+    @Override
+    public IArrayAdapterItem getItem(int position) {
+        if (position < this.getCount() - 1) {
+            return super.getItem(position);
+        }
+        else{
+            return new InsideArrayItem();
+        }
+    }
+
+    @Override
     public int getCount() {
         return (super.getCount() + 1);
-    }*/
+    }
 
     private View getWorkingView(final View convertView) {
         // The workingView is basically just the convertView re-used if possible
@@ -102,5 +113,23 @@ public class SimpleTextArrayAdapter extends ArrayAdapter<IArrayAdapterItem> {
      */
     private static class ViewHolder {
         public TextView titleView;
+    }
+
+    private class InsideArrayItem implements IArrayAdapterItem
+    {
+        @Override
+        public int getId() {
+            return 0;
+        }
+
+        @Override
+        public String getRowText() {
+            return "Add new";
+        }
+    }
+
+    @Override
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        return this.getView(position, convertView, parent);
     }
 }

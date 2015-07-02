@@ -7,8 +7,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
@@ -35,44 +38,26 @@ public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
         try {
 
             Dao<User, Integer> daoUser = getHelper().getDao(User.class);
-            TextView tv = (TextView)findViewById(R.id.textView_Hello);
-
-            /*tv.setText(tv.getText() + "Creating Petya" + System.getProperty("line.separator"));
-            Log.i(Global.Log_Tag, "Creating petya");
-            Date now = Calendar.getInstance().getTime();
-            User user = new User();
-            user.setName("Petya");
-            user.setCreateTimeStamp(now);
-            user.setSyncTimeStamp(now);
-            daoUser.create(user);
-
-            tv.setText(tv.getText() + "Petya id = " + user.getId());
-
-            tv.setText(tv.getText() + "Creating Joro" + System.getProperty("line.separator"));
-
-            User user1 = new User();
-            user1.setName("Joro");
-            user1.setCreateTimeStamp(now);
-            user1.setSyncTimeStamp(now);
-            daoUser.create(user1);
-
-            tv.setText(tv.getText() + "Joro id = " + user.getId());*/
-
             Collection<User> users = daoUser.queryForAll();
 
-
-            /*Iterator<User> iteratorUsers = users.iterator();
-            while (iteratorUsers.hasNext()){
-                User nextUser = iteratorUsers.next();
-                Log.i(Global.Log_Tag, "User " + nextUser.getName());
-                tv.setText(tv.getText() + "User" + nextUser.getName() + System.getProperty("line.separator"));
-               *//* daoUser.delete(nextUser);*//*
-            }*/
-
             SimpleTextArrayAdapter textAdapter =
-                    new SimpleTextArrayAdapter(this, R.id.simple_text_view_title);
-            Spinner spinner = (Spinner)findViewById(R.id.spinner_payer);
+                    new SimpleTextArrayAdapter(this, R.layout.simple_text_view_title, R.id.simple_text_view_title_firstTextView);
+            final Spinner spinner = (Spinner)findViewById(R.id.spinner_payer);
             spinner.setAdapter(textAdapter);
+
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (id == -1){
+                        Toast.makeText(parent.getContext(), "selected add new", Toast.LENGTH_SHORT).show();
+                    }
+                    spinner.setSelection(0, false);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
 
             textAdapter.addAll(users);
         } catch (SQLException e) {

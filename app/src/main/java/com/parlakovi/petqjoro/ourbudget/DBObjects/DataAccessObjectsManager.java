@@ -12,13 +12,13 @@ import java.util.Calendar;
  * Created by gparl_000 on 6/28/2015.
  */
 public class DataAccessObjectsManager {
-    public static Dao<Expense, Integer> daoExpense;
-    public static Dao<User, Integer> daoUser;
-    public static Dao<ExpenseType, Integer> daoExpenseType;
-    public static Dao<ExpenseEdit, Integer> daoExpenseEdit;
+    private static Dao<Expense, Integer> daoExpense;
+    private static Dao<User, Integer> daoUser;
+    private static Dao<ExpenseType, Integer> daoExpenseType;
+    private static Dao<ExpenseEdit, Integer> daoExpenseEdit;
 
 
-    public Dao<User, Integer> getDaoUser(ConnectionSource connectionSurce){
+    public static Dao<User, Integer> getDaoUser(ConnectionSource connectionSurce){
         if (daoUser == null){
             try {
                 daoUser = DaoManager.createDao(connectionSurce, User.class);
