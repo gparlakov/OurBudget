@@ -4,13 +4,14 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.parlakovi.petqjoro.ourbudget.UI.Adapters.IArrayAdapterItem;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by gparl_000 on 6/28/2015.
  */
 @DatabaseTable(tableName = "user")
-public class User implements IArrayAdapterItem {
+public class User implements IArrayAdapterItem, Serializable {
 
     @Override
     public String getRowText() {

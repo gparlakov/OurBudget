@@ -7,9 +7,11 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import com.parlakovi.petqjoro.ourbudget.Global;
 
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -28,6 +30,8 @@ public class DataBaseManager extends OrmLiteSqliteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase, ConnectionSource connectionSource){
+        Global.DAOManager = new DataAccessObjectsManager(connectionSource);
+
         try {
             TableUtils.createTableIfNotExists(connectionSource, User.class);
 
@@ -36,6 +40,10 @@ public class DataBaseManager extends OrmLiteSqliteOpenHelper {
             TableUtils.createTableIfNotExists(connectionSource, ExpenseType.class);
 
             TableUtils.createTableIfNotExists(connectionSource, ExpenseEdit.class);
+
+            setInitialDataForUsers();
+
+
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -47,20 +55,26 @@ public class DataBaseManager extends OrmLiteSqliteOpenHelper {
 
     }
 
-    private void initialDataForUsers() throws SQLException{
+    private void setInitialDataForUsers() throws SQLException{
 
-        Dao<User, Integer> daoUser = DataAccessObjectsManager.getDaoUser(connectionSource);
+        Dao<User, Integer> daoUser = Global.DAOManager.getDaoUser();
         Date now = Calendar.getInstance().getTime();
-        User user = new User();
-        user.setName("Petq");
-        user.setCreateTimeStamp(now);
-        user.setSyncTimeStamp(now);
-        daoUser.create(user);
 
-        User user1 = new User();
-        user1.setName("Joro");
-        user1.setCreateTimeStamp(now);
-        user1.setSyncTimeStamp(now);
-        daoUser.create(user1);
+        User user_petya = new User();
+        user_petya.setName("Petq");
+        user_petya.setCreateTimeStamp(now);
+        user_petya.setSyncTimeStamp(now);
+
+
+        User user_joro = new User();
+        user_joro.setName("Joro");
+        user_joro.setCreateTimeStamp(now);
+        user_joro.setSyncTimeStamp(now);
+
+        Collection<User> allUsers = daoUser.queryForAll();
+        if (!allUsers.contains(user_joro) ) {
+            daoUser.create(user_petya);
+            daoUser.create(user_joro);
+        }
     }
 }
