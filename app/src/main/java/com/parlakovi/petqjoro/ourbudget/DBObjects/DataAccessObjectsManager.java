@@ -12,16 +12,23 @@ import java.util.Calendar;
  * Created by gparl_000 on 6/28/2015.
  */
 public class DataAccessObjectsManager {
+
+    private static ConnectionSource mConnectionSource = null;
+
+    public DataAccessObjectsManager(ConnectionSource connectionSource){
+        mConnectionSource = connectionSource;
+    }
+
     private static Dao<Expense, Integer> daoExpense;
     private static Dao<User, Integer> daoUser;
     private static Dao<ExpenseType, Integer> daoExpenseType;
     private static Dao<ExpenseEdit, Integer> daoExpenseEdit;
 
 
-    public static Dao<User, Integer> getDaoUser(ConnectionSource connectionSurce){
+    public static Dao<User, Integer> getDaoUser(){
         if (daoUser == null){
             try {
-                daoUser = DaoManager.createDao(connectionSurce, User.class);
+                daoUser = DaoManager.createDao(mConnectionSource, User.class);
 
             }
             catch (SQLException e) {
@@ -33,10 +40,10 @@ public class DataAccessObjectsManager {
         return daoUser;
     }
 
-    public Dao<Expense, Integer> getDaoExpense(ConnectionSource connectionSurce){
+    public Dao<Expense, Integer> getDaoExpense(){
         if (daoExpense == null){
             try {
-                daoExpense = DaoManager.createDao(connectionSurce, Expense.class);
+                daoExpense = DaoManager.createDao(mConnectionSource, Expense.class);
             }
             catch (SQLException e) {
                 e.printStackTrace();
@@ -47,10 +54,10 @@ public class DataAccessObjectsManager {
         return daoExpense;
     }
 
-    public Dao<ExpenseType, Integer> getDaoExpenseType(ConnectionSource connectionSurce){
+    public Dao<ExpenseType, Integer> getDaoExpenseType(){
         if (daoExpenseType == null){
             try {
-                daoExpenseType = DaoManager.createDao(connectionSurce, ExpenseType.class);
+                daoExpenseType = DaoManager.createDao(mConnectionSource, ExpenseType.class);
             }
             catch (SQLException e) {
                 e.printStackTrace();
@@ -61,15 +68,13 @@ public class DataAccessObjectsManager {
         return daoExpenseType;
     }
 
-    public Dao<ExpenseEdit, Integer> getDaoExpenseEdit(ConnectionSource connectionSurce){
-        if (daoExpenseEdit == null){
+    public Dao<ExpenseEdit, Integer> getDaoExpenseEdit() {
+        if (daoExpenseEdit == null) {
             try {
-                daoExpenseEdit = DaoManager.createDao(connectionSurce, ExpenseEdit.class);
-            }
-            catch (SQLException e) {
+                daoExpenseEdit = DaoManager.createDao(mConnectionSource, ExpenseEdit.class);
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
-
         }
 
         return daoExpenseEdit;
