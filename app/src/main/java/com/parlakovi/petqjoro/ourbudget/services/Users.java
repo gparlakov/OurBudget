@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.Calendar;
 
 /**
- * Created by georgi.parlakov on 6.7.2015 ã..
+ * Created by georgi.parlakov on 6.7.2015
  */
 public class Users {
     public User SaveNew(User user) throws SQLException{
@@ -19,7 +19,7 @@ public class Users {
         result.setCreateTimeStamp(calendar.getTime());
         result.setSyncTimeStamp(calendar.getTime());
 
-        Dao<User, Integer> daoUser = Global.DAOManager.getDaoUser();
+        Dao<User, Integer> daoUser = Global.DBHelper.getDao(User.class);
         daoUser.create(result);
 
         return result;

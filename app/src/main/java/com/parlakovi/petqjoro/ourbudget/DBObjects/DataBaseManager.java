@@ -8,6 +8,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.parlakovi.petqjoro.ourbudget.Global;
+import com.parlakovi.petqjoro.ourbudget.services.Users;
 
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -19,7 +20,6 @@ import java.util.Date;
  */
 public class DataBaseManager extends OrmLiteSqliteOpenHelper {
 
-
     private static final String DATABASE_NAME = "ourBudgetDatabase.db";
 
     private static final int DATABASE_VERSION = 1;
@@ -30,8 +30,6 @@ public class DataBaseManager extends OrmLiteSqliteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase, ConnectionSource connectionSource){
-        Global.DAOManager = new DataAccessObjectsManager(connectionSource);
-
         try {
             TableUtils.createTableIfNotExists(connectionSource, User.class);
 
@@ -57,7 +55,8 @@ public class DataBaseManager extends OrmLiteSqliteOpenHelper {
 
     private void setInitialDataForUsers() throws SQLException{
 
-        Dao<User, Integer> daoUser = Global.DAOManager.getDaoUser();
+        Users usersMgr = new Users();
+        Dao<User, Integer> daoUser = Global.DBHelper.getDao(User.class);
         Date now = Calendar.getInstance().getTime();
 
         User user_petya = new User();
