@@ -31,6 +31,9 @@ public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
 
     private Spinner mUserSelectSpinner;
     private SimpleTextArrayAdapter mUserSelectSpinnerAdapter;
+    private int mUserSelectSpinnerNewUserPosition;
+    private int mUserSelectSpinnerLastSelectPosition;
+
     private Spinner getUserSelectSpinner(){
         if (mUserSelectSpinner == null){
             mUserSelectSpinner = (Spinner) findViewById(R.id.spinner_payer);
@@ -40,15 +43,20 @@ public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if (id == -1) {
                         /*Toast.makeText(parent.getContext(), "selected add new", Toast.LENGTH_SHORT).show();*/
-                        getUserSelectSpinner().setSelection(0, false);
+                        /*getUserSelectSpinner().setSelection(0, false);*/
 
                         Intent addUserIntent = new Intent(MainActivity.this, addEditUserActivity.class);
                         addUserIntent.putExtra(addEditUserActivity.USER_ID_EXTRA, 0);
                         startActivityForResult(addUserIntent, REQUEST_CODE_ADD_USER);
+
+                        mUserSelectSpinnerNewUserPosition = position;
+                    }
+                    else {
+                        mUserSelectSpinnerLastSelectPosition = position;
                     }
 
                     /*mUserSelectSpinner.setSelection(position);*/
-                    writeDownSelection();
+                    /*writeDownSelection();*/
                 }
 
                 @Override
@@ -61,9 +69,16 @@ public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
 
     public final static String NEWLY_CREATED_USER = "com.parlakovi.petqjoro.ourbuget.NEWLY_CREATED_USER";
 
+    protected void AddToSpinner(User user, int newUserPosition){
+        mUserSelectSpinnerAdapter.add(user);
+        mUserSelectSpinner.setSelection(newUserPosition);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        this.getHelper();
 
         final Activity act = this;
         switch (requestCode){
@@ -71,8 +86,10 @@ public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
                 if (resultCode == RESULT_OK){
                     User user = (User)data.getSerializableExtra(NEWLY_CREATED_USER);
 
+                    getUserSelectSpinner().setSelection(mUserSelectSpinnerNewUserPosition, true);
                     new AsyncTask<User, Void, Boolean>() {
 
+                        User mUser;
                         SQLException sqlException;
 
                         @Override
@@ -81,8 +98,7 @@ public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
 
                             Users usersMgr = new Users();
                             try {
-                                User result = usersMgr.SaveNew(user);
-                                mUserSelectSpinnerAdapter.add(user);
+                                mUser = usersMgr.SaveNew(user);
                                 return true;
                             } catch (SQLException e) {
                                 sqlException = e;
@@ -95,10 +111,17 @@ public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
 
                             if (!addedUserOk){
                                 sqlException.printStackTrace();
+
                                 Toast.makeText(act, "FAIL User not added", Toast.LENGTH_LONG).show();
+                            }
+                            else{
+                                AddToSpinner(mUser, mUserSelectSpinnerNewUserPosition);
                             }
                         }
                     }.execute(user);
+                }
+                else {
+                    mUserSelectSpinner.setSelection(mUserSelectSpinnerLastSelectPosition);
                 }
                 break;
             }
@@ -118,9 +141,11 @@ public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Global.DBHelper = this.getHelper();
+
         if (savedInstanceState == null) {
             try {
-                Dao<User, Integer> daoUser = getHelper().getDao(User.class);
+                Dao<User, Integer> daoUser = Global.DBHelper.getDao(User.class);
                 Collection<User> users = daoUser.queryForAll();
 
                 mUserSelectSpinnerAdapter =
@@ -149,7 +174,7 @@ public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        boolean handled = false;
+        boolean handled;
         int id = item.getItemId();
 
         switch (id){

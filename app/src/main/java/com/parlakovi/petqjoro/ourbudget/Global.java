@@ -1,6 +1,6 @@
 package com.parlakovi.petqjoro.ourbudget;
 
-import com.parlakovi.petqjoro.ourbudget.DBObjects.DataAccessObjectsManager;
+import com.parlakovi.petqjoro.ourbudget.DBObjects.DataBaseManager;
 
 /**
  * Created by gparl_000 on 6/28/2015.
@@ -8,5 +8,5 @@ import com.parlakovi.petqjoro.ourbudget.DBObjects.DataAccessObjectsManager;
 public class Global {
     public static final String Log_Tag = "OurBugetApp";
 
-    public static DataAccessObjectsManager DAOManager;
+    public static DataBaseManager DBHelper;
 }
