@@ -21,8 +21,7 @@
         android:spinnerMode="dropdown"
         android:layout_gravity="center_horizontal"
         android:gravity="center_horizontal"
-        android:textAlignment="center"
-        ></Spinner>
+        />
 
 </LinearLayout>
 <!--<fragment xmlns:android="http://schemas.android.com/apk/res/android"
