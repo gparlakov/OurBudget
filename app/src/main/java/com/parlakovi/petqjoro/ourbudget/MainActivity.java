@@ -2,126 +2,46 @@ package com.parlakovi.petqjoro.ourbudget;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
-import com.j256.ormlite.dao.Dao;
-import com.parlakovi.petqjoro.ourbudget.DBObjects.DataBaseManager;
-import com.parlakovi.petqjoro.ourbudget.DBObjects.User;
-import com.parlakovi.petqjoro.ourbudget.UI.Adapters.SimpleTextArrayAdapter;
-import com.parlakovi.petqjoro.ourbudget.activities.addEditUserActivity;
-import com.parlakovi.petqjoro.ourbudget.services.Users;
+import com.parlakovi.petqjoro.ourbudget.UI.Controllers.UserSpinnerWithAddNewController;
+import com.parlakovi.petqjoro.ourbudget.UI.Interfaces.ISaveInstanceStateHandler;
+import com.parlakovi.petqjoro.ourbudget.activities.BaseActivity;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 
-public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
+public class MainActivity extends BaseActivity {
 
-    private final static String CHOSEN_USER = "CHOSEN_USER";
-    private static final int REQUEST_CODE_ADD_USER = 1000;
+    private final static String CHOSEN_USER = "com.parlakovi.petqjoro.ourbuget.CHOSEN_USER";
+    private UserSpinnerWithAddNewController mUserSelectSpinnerController;
+    private Collection<ISaveInstanceStateHandler> childrenThatHaveInstanceStateHandlers = new ArrayList<>();
 
-    private Spinner mUserSelectSpinner;
-    private SimpleTextArrayAdapter mUserSelectSpinnerAdapter;
-    private int mUserSelectSpinnerNewUserPosition;
-    private int mUserSelectSpinnerLastSelectPosition;
-
-    private Spinner getUserSelectSpinner(){
-        if (mUserSelectSpinner == null){
-            mUserSelectSpinner = (Spinner) findViewById(R.id.spinner_payer);
-
-            mUserSelectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if (id == -1) {
-                        /*Toast.makeText(parent.getContext(), "selected add new", Toast.LENGTH_SHORT).show();*/
-                        /*getUserSelectSpinner().setSelection(0, false);*/
-
-                        Intent addUserIntent = new Intent(MainActivity.this, addEditUserActivity.class);
-                        addUserIntent.putExtra(addEditUserActivity.USER_ID_EXTRA, 0);
-                        startActivityForResult(addUserIntent, REQUEST_CODE_ADD_USER);
-
-                        mUserSelectSpinnerNewUserPosition = position;
-                    }
-                    else {
-                        mUserSelectSpinnerLastSelectPosition = position;
-                    }
-
-                    /*mUserSelectSpinner.setSelection(position);*/
-                    /*writeDownSelection();*/
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                }
-            });
-        }
-        return mUserSelectSpinner;
-    }
-
+    public static final int REQUEST_CODE_ADD_USER = 1000;
     public final static String NEWLY_CREATED_USER = "com.parlakovi.petqjoro.ourbuget.NEWLY_CREATED_USER";
 
-    protected void AddToSpinner(User user, int newUserPosition){
-        mUserSelectSpinnerAdapter.add(user);
-        mUserSelectSpinner.setSelection(newUserPosition);
+    private UserSpinnerWithAddNewController getUserSelectSpinnerController(){
+        return mUserSelectSpinnerController;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        this.getHelper();
-
-        final Activity act = this;
+        final Activity activity = this;
         switch (requestCode){
             case REQUEST_CODE_ADD_USER:{
                 if (resultCode == RESULT_OK){
-                    User user = (User)data.getSerializableExtra(NEWLY_CREATED_USER);
-
-                    getUserSelectSpinner().setSelection(mUserSelectSpinnerNewUserPosition, true);
-                    new AsyncTask<User, Void, Boolean>() {
-
-                        User mUser;
-                        SQLException sqlException;
-
-                        @Override
-                        protected Boolean doInBackground(User... params) {
-                            User user = params[0];
-
-                            Users usersMgr = new Users();
-                            try {
-                                mUser = usersMgr.SaveNew(user);
-                                return true;
-                            } catch (SQLException e) {
-                                sqlException = e;
-                                return false;
-                            }
-                        }
-
-                        @Override
-                        protected void onPostExecute(Boolean addedUserOk) {
-
-                            if (!addedUserOk){
-                                sqlException.printStackTrace();
-
-                                Toast.makeText(act, "FAIL User not added", Toast.LENGTH_LONG).show();
-                            }
-                            else{
-                                AddToSpinner(mUser, mUserSelectSpinnerNewUserPosition);
-                            }
-                        }
-                    }.execute(user);
+                    getUserSelectSpinnerController().OnAddNewSuccess(data, activity);
                 }
                 else {
-                    mUserSelectSpinner.setSelection(mUserSelectSpinnerLastSelectPosition);
+                     getUserSelectSpinnerController().OnAddNewCanceled();
                 }
                 break;
             }
@@ -132,37 +52,23 @@ public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
         }
     }
 
-    private void writeDownSelection() {
-        Log.i(Global.Log_Tag,  getUserSelectSpinner().getSelectedItemId()+ "");
-    }
-
     @Override
-     protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Global.DBHelper = this.getHelper();
-
         if (savedInstanceState == null) {
-            try {
-                Dao<User, Integer> daoUser = Global.DBHelper.getDao(User.class);
-                Collection<User> users = daoUser.queryForAll();
-
-                mUserSelectSpinnerAdapter =
-                        new SimpleTextArrayAdapter(this, R.layout.simple_text_view_title, R.id.simple_text_view_title_firstTextView);
-
-                getUserSelectSpinner().setAdapter(mUserSelectSpinnerAdapter);
-
-                mUserSelectSpinnerAdapter.addAll(users);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            InitUI();
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    private void InitUI() {
+        if (mUserSelectSpinnerController == null){
+            UserSpinnerWithAddNewController userSpinner =
+                    new UserSpinnerWithAddNewController((Spinner)findViewById(R.id.spinner_payer), this);
+            mUserSelectSpinnerController = userSpinner;
+            childrenThatHaveInstanceStateHandlers.add(mUserSelectSpinnerController);
+        }
     }
 
     @Override
@@ -192,9 +98,12 @@ public class MainActivity extends OrmLiteBaseActivity<DataBaseManager> {
     }
 
     @Override
-     protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt(CHOSEN_USER, 0);
+        for (Iterator<ISaveInstanceStateHandler> i = childrenThatHaveInstanceStateHandlers.iterator(); i.hasNext();) {
+            ISaveInstanceStateHandler item = i.next();
+            item.onSaveInstanceState(outState);
+        }
     }
 }
