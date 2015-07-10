@@ -2,14 +2,16 @@ package com.parlakovi.petqjoro.ourbudget.DBObjects;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.parlakovi.petqjoro.ourbudget.UI.Adapters.IArrayAdapterItem;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by gparl_000 on 6/28/2015.
  */
 @DatabaseTable(tableName = "expense")
-public class Expense {
+public class Expense implements IArrayAdapterItem, Serializable {
     public Expense() {
     }
 
@@ -33,6 +35,16 @@ public class Expense {
 
     public int getId() {
         return id;
+    }
+
+    @Override
+    public String getRowText() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Payed by ").append(getPayer())
+                .append(" on ").append(getCreateTimeStamp())
+                .append(" sum ").append(getAmount());
+
+        return  builder.toString();
     }
 
     public void setId(int id) {

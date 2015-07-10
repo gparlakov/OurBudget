@@ -3,14 +3,16 @@ package com.parlakovi.petqjoro.ourbudget.DBObjects;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.parlakovi.petqjoro.ourbudget.UI.Adapters.IArrayAdapterItem;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by gparl_000 on 6/28/2015.
  */
 @DatabaseTable(tableName = "expenseType")
-public class ExpenseType {
+public class ExpenseType implements IArrayAdapterItem, Serializable {
     public ExpenseType(){}
 
     @DatabaseField(generatedId = true)
@@ -30,6 +32,11 @@ public class ExpenseType {
 
     public int getId() {
         return id;
+    }
+
+    @Override
+    public String getRowText() {
+        return  getDescription();
     }
 
     public void setId(int id) {

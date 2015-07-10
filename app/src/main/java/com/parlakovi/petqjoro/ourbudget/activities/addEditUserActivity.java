@@ -29,13 +29,13 @@ public class addEditUserActivity extends ActionBarActivity {
 
         final Activity self = this;
 
-        Button button = (Button)this.findViewById(R.id.button_addUser_OK);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button buttonOK = (Button)this.findViewById(R.id.button_addUser_OK);
+        buttonOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 User newUser = new User();
 
-                EditText editText_addUserName = (EditText)self.findViewById(R.id.editText_addUser_Name);
+                EditText editText_addUserName = (EditText) self.findViewById(R.id.editText_addUser_Name);
 
                 newUser.setName(editText_addUserName.getText().toString());
 
@@ -67,6 +67,13 @@ public class addEditUserActivity extends ActionBarActivity {
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        onCancel();
+
+        return true;
+    }
+
+    private void onCancel() {
+        setResult(RESULT_CANCELED);
+        finish();
     }
 }
