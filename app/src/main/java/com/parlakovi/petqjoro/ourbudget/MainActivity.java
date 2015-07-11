@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Spinner;
 
+import com.parlakovi.petqjoro.ourbudget.UI.Controllers.ExpenseSpinnerWithAddNewController;
 import com.parlakovi.petqjoro.ourbudget.UI.Controllers.UserSpinnerWithAddNewController;
 import com.parlakovi.petqjoro.ourbudget.UI.Interfaces.ISaveInstanceStateHandler;
 import com.parlakovi.petqjoro.ourbudget.activities.BaseActivity;
@@ -20,38 +21,21 @@ import java.util.Iterator;
 public class MainActivity extends BaseActivity {
 
     private final static String CHOSEN_USER = "com.parlakovi.petqjoro.ourbuget.CHOSEN_USER";
+    public static final int REQUEST_CODE_ADD_EXPENSE_TYPE = 1001;
     private UserSpinnerWithAddNewController mUserSelectSpinnerController;
     private Collection<ISaveInstanceStateHandler> childrenThatHaveInstanceStateHandlers = new ArrayList<>();
 
     public static final int REQUEST_CODE_ADD_USER = 1000;
     public final static String NEWLY_CREATED_USER = "com.parlakovi.petqjoro.ourbuget.NEWLY_CREATED_USER";
+    private ExpenseSpinnerWithAddNewController mExpenseTypeSpinnerController;
 
     private UserSpinnerWithAddNewController getUserSelectSpinnerController(){
         return mUserSelectSpinnerController;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        final Activity activity = this;
-        switch (requestCode){
-            case REQUEST_CODE_ADD_USER:{
-                if (resultCode == RESULT_OK){
-                    getUserSelectSpinnerController().OnAddNewSuccess(data, activity);
-                }
-                else {
-                     getUserSelectSpinnerController().OnAddNewCanceled();
-                }
-                break;
-            }
-            default:
-                Log.e(Global.Log_Tag, "Result returned from an UNKNOWN request");
-                finish();
-                break;
-        }
+    private ExpenseSpinnerWithAddNewController getExpenseTypeSpinnerController(){
+        return mExpenseTypeSpinnerController;
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,10 +48,38 @@ public class MainActivity extends BaseActivity {
 
     private void InitUI() {
         if (mUserSelectSpinnerController == null){
-            UserSpinnerWithAddNewController userSpinner =
+            mUserSelectSpinnerController =
                     new UserSpinnerWithAddNewController((Spinner)findViewById(R.id.spinner_payer), this);
-            mUserSelectSpinnerController = userSpinner;
             childrenThatHaveInstanceStateHandlers.add(mUserSelectSpinnerController);
+        }
+
+        if (mExpenseTypeSpinnerController == null) {
+            mExpenseTypeSpinnerController =
+                    new ExpenseSpinnerWithAddNewController((Spinner) findViewById(R.id.spinner_expenseType), this);
+            childrenThatHaveInstanceStateHandlers.add(mExpenseTypeSpinnerController);
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        final Activity activity = this;
+        switch (requestCode){
+            case REQUEST_CODE_ADD_USER:{
+                if (resultCode == RESULT_OK){
+                    getUserSelectSpinnerController().OnAddNewSuccess(data, activity);
+                }
+                else {
+                    getUserSelectSpinnerController().OnAddNewCanceled();
+                }
+                break;
+            }
+            default:
+                Log.e(Global.Log_Tag, "Result returned from an UNKNOWN request");
+                finish();
+                break;
         }
     }
 

@@ -1,5 +1,6 @@
 package com.parlakovi.petqjoro.ourbudget.UI.Controllers;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -7,14 +8,14 @@ import android.widget.AdapterView;
 import android.widget.Spinner;
 
 import com.j256.ormlite.dao.Dao;
-import com.parlakovi.petqjoro.ourbudget.DBObjects.Expense;
 import com.parlakovi.petqjoro.ourbudget.DBObjects.ExpenseType;
-import com.parlakovi.petqjoro.ourbudget.DBObjects.User;
 import com.parlakovi.petqjoro.ourbudget.Global;
+import com.parlakovi.petqjoro.ourbudget.MainActivity;
 import com.parlakovi.petqjoro.ourbudget.R;
 import com.parlakovi.petqjoro.ourbudget.UI.Adapters.SimpleTextArrayAdapter;
 import com.parlakovi.petqjoro.ourbudget.UI.Interfaces.ISaveInstanceStateHandler;
 import com.parlakovi.petqjoro.ourbudget.activities.BaseActivity;
+import com.parlakovi.petqjoro.ourbudget.activities.addEditExpenseTypeActivity;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -24,9 +25,14 @@ import java.util.Collection;
  */
 public class ExpenseSpinnerWithAddNewController implements ISaveInstanceStateHandler {
 
+    private final String EXTRA_ITEMS = "ExpenseTypesItems";
     private final Spinner mExpenseTypeSpinner;
     private final BaseActivity mActivity;
     private SimpleTextArrayAdapter mExpenseTypeAdapter;
+    private Collection<ExpenseType> ItemsRestored;
+    private int mNextItemPosition;
+    private int mLastItemPosition;
+    private boolean mInitialSelectHasPassed;
 
     public ExpenseSpinnerWithAddNewController(Spinner spinner, BaseActivity activity){
         mExpenseTypeSpinner = spinner;
@@ -41,55 +47,77 @@ public class ExpenseSpinnerWithAddNewController implements ISaveInstanceStateHan
 
         mExpenseTypeSpinner.setAdapter(mExpenseTypeAdapter);
 
+        if (ItemsRestored != null){
+            mExpenseTypeAdapter.addAll(ItemsRestored);
+            mExpenseTypeSpinner.setSelection(0);
+        }
+        else {
+            new AsyncTask<Void, Void, Collection<ExpenseType>>() {
 
-        new AsyncTask<Void, Void, Collection<ExpenseType>>() {
+                SQLException mSqlException;
 
-            SQLException mSqlException;
-
-            @Override
-            protected Collection<ExpenseType> doInBackground(Void... params) {
-                try {
-                    Dao<ExpenseType, Integer> daoExpenses = Global.DBHelper.getDao(ExpenseType.class);
-                    return daoExpenses.queryForAll();
-                } catch (SQLException e) {
-                    mSqlException = e;
-                    return null;
+                @Override
+                protected Collection<ExpenseType> doInBackground(Void... params) {
+                    try {
+                        Dao<ExpenseType, Integer> daoExpenses = Global.DBHelper.getDao(ExpenseType.class);
+                        return daoExpenses.queryForAll();
+                    } catch (SQLException e) {
+                        mSqlException = e;
+                        return null;
+                    }
                 }
-            }
 
-            @Override
-            protected void onPostExecute(Collection<ExpenseType> expenseTypes) {
-                if (expenseTypes == null) {
-                    mSqlException.printStackTrace();
-                    mActivity.Finish("Cold not init spinner", "DB problem");
+                @Override
+                protected void onPostExecute(Collection<ExpenseType> expenseTypes) {
+                    if (expenseTypes == null) {
+                        mSqlException.printStackTrace();
+                        mActivity.Finish("Cold not init spinner", "DB problem");
+                    }
+                    mExpenseTypeAdapter.addAll(expenseTypes);
+                    mExpenseTypeSpinner.setSelection(0);
                 }
-                mExpenseTypeAdapter.addAll(expenseTypes);
-                mExpenseTypeSpinner.setSelection(0);
-                InitSpinnerEvents();
-            }
-        }.execute();
+            }.execute();
+        }
+
+        InitSpinnerEvents();
     }
 
     private void InitSpinnerEvents() {
+
         mExpenseTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                /*if (!mInitialSelectHasPassed){
+                    mInitialSelectHasPassed = true;
+                    return;
+                }*/
 
+                if (id == -1) {
+
+                    Intent addUserIntent = new Intent(mActivity, addEditExpenseTypeActivity.class);
+
+                    mActivity.startActivityForResult(addUserIntent, MainActivity.REQUEST_CODE_ADD_EXPENSE_TYPE);
+
+                    mNextItemPosition = position;
+                } else {
+                    mLastItemPosition = position;
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                int x = 1;
             }
         });
     }
 
     @Override
     public void onSaveInstanceState(Bundle bundle) {
-
+//        bundle.putSerializable(EXTRA_ITEMS, mExpenseTypeAdapter.getAllItems());
     }
 
     @Override
     public void onRestoreInstanceState(Bundle bundle) {
-
+        this.ItemsRestored = (Collection<ExpenseType>)bundle.getSerializable(EXTRA_ITEMS);
     }
 }

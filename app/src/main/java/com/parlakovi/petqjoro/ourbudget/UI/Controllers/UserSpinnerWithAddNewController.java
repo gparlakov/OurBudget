@@ -84,7 +84,7 @@ public class UserSpinnerWithAddNewController implements ISaveInstanceStateHandle
                 if (id == -1) {
 
                     Intent addUserIntent = new Intent(mActivity, addEditUserActivity.class);
-                    addUserIntent.putExtra(addEditUserActivity.USER_ID_EXTRA, 0);
+                    /*addUserIntent.putExtra(addEditUserActivity.USER_ID_EXTRA, 0);*/
                     mActivity.startActivityForResult(addUserIntent, MainActivity.REQUEST_CODE_ADD_USER);
 
                     mUserSelectSpinnerNewUserPosition = position;

@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.parlakovi.petqjoro.ourbudget.R;
 
-import java.util.zip.Inflater;
+import java.util.Collection;
 
 /**
  * Created by gparl_000 on 6/28/2015.
@@ -17,7 +17,7 @@ import java.util.zip.Inflater;
 public class SimpleTextArrayAdapter extends ArrayAdapter<IArrayAdapterItem> {
 
     private final int resourceIdForRow;
-
+    private Collection<? extends IArrayAdapterItem> mCurrentCollection;
     public SimpleTextArrayAdapter(Context context, int resourceIdForRow, int textViewResId) {
         super(context, resourceIdForRow, textViewResId);
 
@@ -105,6 +105,10 @@ public class SimpleTextArrayAdapter extends ArrayAdapter<IArrayAdapterItem> {
         }
 
         return viewHolder;
+    }
+
+    public Collection<IArrayAdapterItem> getAllItems() {
+        return null;
     }
 
     /**

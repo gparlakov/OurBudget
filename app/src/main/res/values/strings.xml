@@ -8,4 +8,10 @@
     <string name="button_OK">OK</string>
     <string name="title_add_user">Add New User</string>
     <string name="label_User">User</string>
+    <string name="title_activity_add_edit_expense_type">addEditExpenseTypeActivity</string>
+    <string name="title_activity_base_add_edit">BaseAddEditActivity</string>
+    <string name="title_addExpenseType">Add Expense Type</string>
+    <string name="label_expenseType_description">Description</string>
+    <string name="hint_expenseTypeDescription">ex: Петя Лични Дрехи</string>
+    <string name="label_expenseType">Expense Type</string>
 </resources>

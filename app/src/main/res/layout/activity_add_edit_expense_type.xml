@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.parlakovi.petqjoro.ourbudget.activities.addEditExpenseTypeActivity">
+
+    <TextView android:text="@string/label_expenseType_description" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:hint="@string/hint_expenseTypeDescription"
+        android:id="@+id/editText_expenseType_desciption" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/label_User"
+        android:layout_below="@+id/editText_expenseType_desciption"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/label_expenseType_User" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner_expenseType_user"
+        android:layout_below="@+id/label_expenseType_User"
+        android:layout_alignParentLeft="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/spinner_expenseType_user"
+        android:layout_alignParentRight="true"
+        android:id="@+id/button_addExpenseType_OK"
+        android:text="@string/button_OK"/>
+
+</RelativeLayout>

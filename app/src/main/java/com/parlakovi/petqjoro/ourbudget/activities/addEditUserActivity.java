@@ -15,7 +15,7 @@ import com.parlakovi.petqjoro.ourbudget.DBObjects.User;
 import com.parlakovi.petqjoro.ourbudget.MainActivity;
 import com.parlakovi.petqjoro.ourbudget.R;
 
-public class addEditUserActivity extends ActionBarActivity {
+public class addEditUserActivity extends BaseAddEditActivity {
 
     public static final String USER_ID_EXTRA = "user id extra";
 
@@ -23,9 +23,7 @@ public class addEditUserActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_user);
-
-        ActionBar bar = getSupportActionBar();
-        bar.setTitle(R.string.title_add_user);
+        mTitle = getString(R.string.title_add_user);
 
         final Activity self = this;
 
@@ -67,13 +65,8 @@ public class addEditUserActivity extends ActionBarActivity {
             return true;
         }
 
-        onCancel();
-
-        return true;
+        // handles cancel
+       return super.onOptionsItemSelected(item);
     }
 
-    private void onCancel() {
-        setResult(RESULT_CANCELED);
-        finish();
-    }
 }
