@@ -30,6 +30,9 @@ public class ExpenseType implements IArrayAdapterItem, Serializable {
     @DatabaseField(canBeNull = true)
     private Date syncTimeStamp;
 
+/*    @DatabaseField(dataType = DataType.BOOLEAN)
+    public boolean HasSubtype;*/
+
     public int getId() {
         return id;
     }

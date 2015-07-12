@@ -22,7 +22,9 @@ import com.parlakovi.petqjoro.ourbudget.MainActivity;
 import com.parlakovi.petqjoro.ourbudget.R;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 public class addEditExpenseTypeActivity extends BaseAddEditActivity {
 
@@ -62,10 +64,24 @@ public class addEditExpenseTypeActivity extends BaseAddEditActivity {
                     mSqlException.printStackTrace();
                 }
                 else {
-                    ArrayAdapter<User> adapter = new ArrayAdapter<User>(self, R.layout.simple_text_view_title);
+                    ArrayAdapter<UserForSpinner> adapter = new ArrayAdapter<UserForSpinner>(self, R.layout.simple_text_view);
                     Spinner usersSpinner = (Spinner)self.findViewById(R.id.spinner_expenseType_user);
                     usersSpinner.setAdapter(adapter);
-                    adapter.addAll(users);
+
+                    Collection<UserForSpinner> usersForSpiner = new ArrayList<UserForSpinner>();
+
+                    for (Iterator<User> i = users.iterator(); i.hasNext(); ) {
+
+                        UserForSpinner next = new UserForSpinner();
+                        User user = i.next();
+                        next.ID = user.getId();
+                        next.Name = user.getName();
+
+                        usersForSpiner.add(next);
+                    }
+
+                    adapter.addAll(usersForSpiner);
+                    InitUIHandlers();
                 }
 
             }
@@ -74,21 +90,34 @@ public class addEditExpenseTypeActivity extends BaseAddEditActivity {
     }
 
     private void InitUIHandlers(){
+
+        final Activity self = this;
+
         Button buttonOK = (Button)this.findViewById(R.id.button_addExpenseType_OK);
         buttonOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ExpenseType newUser = new ExpenseType();
+                ExpenseType newExpenseType = new ExpenseType();
 
-               /* EditText editText_addExpenseType_forUser = (EditText) self.findViewById(R.id.editText_addUser_Name);
+                EditText editText_addExpenseType_description = (EditText) self.findViewById(R.id.editText_expenseType_desciption);
+                newExpenseType.setDescription(editText_addExpenseType_description.getText().toString());
 
-                newUser.setName(editText_addUserName.getText().toString());
+                Spinner userSpinner = (Spinner) self.findViewById(R.id.spinner_expenseType_user);
+
+
+                UserForSpinner selectedUserForSpinner = (UserForSpinner)userSpinner.getSelectedItem();
+                User selectedUser = new User();
+                selectedUser.setId(selectedUserForSpinner.ID);
+                selectedUser.setName(selectedUserForSpinner.Name);
+
+                newExpenseType.setExpenseTargetUser(selectedUser);
+
 
                 Intent resultIntent = getIntent();
-                resultIntent.putExtra(MainActivity.NEWLY_CREATED_USER, newUser);
+                resultIntent.putExtra(MainActivity.NEWLY_CREATED_EXPENSE_TYPE, newExpenseType);
                 self.setResult(RESULT_OK, resultIntent);
 
-                finish();*/
+                finish();
             }
         });
 
@@ -114,5 +143,15 @@ public class addEditExpenseTypeActivity extends BaseAddEditActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class UserForSpinner{
+        public int ID;
+        public String Name;
+
+        @Override
+        public String toString() {
+            return Name;
+        }
     }
 }

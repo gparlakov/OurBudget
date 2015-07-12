@@ -1,5 +1,6 @@
 package com.parlakovi.petqjoro.ourbudget.UI.Controllers;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import com.parlakovi.petqjoro.ourbudget.activities.BaseActivity;
 import com.parlakovi.petqjoro.ourbudget.activities.addEditExpenseTypeActivity;
 
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Collection;
 
 /**
@@ -87,10 +89,6 @@ public class ExpenseSpinnerWithAddNewController implements ISaveInstanceStateHan
         mExpenseTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                /*if (!mInitialSelectHasPassed){
-                    mInitialSelectHasPassed = true;
-                    return;
-                }*/
 
                 if (id == -1) {
 
@@ -119,5 +117,47 @@ public class ExpenseSpinnerWithAddNewController implements ISaveInstanceStateHan
     @Override
     public void onRestoreInstanceState(Bundle bundle) {
         this.ItemsRestored = (Collection<ExpenseType>)bundle.getSerializable(EXTRA_ITEMS);
+    }
+
+    public void OnAddNewSuccess(Intent data, Activity activity) {
+        final ExpenseType newExpenseType =
+                (ExpenseType)data.getSerializableExtra(MainActivity.NEWLY_CREATED_EXPENSE_TYPE);
+
+        new AsyncTask<Void, Void, ExpenseType>() {
+            public SQLException mSqlException;
+
+            @Override
+            protected ExpenseType doInBackground(Void... voids) {
+                try {
+                    Dao<ExpenseType, Integer> expenseTypeDao = Global.DBHelper.getDao(ExpenseType.class);
+                    Calendar cal = Calendar.getInstance();
+
+                    newExpenseType.setCreateTimeStamp(cal.getTime());
+                    newExpenseType.setSyncTimeStamp(cal.getTime());
+
+                    newExpenseType.setId(expenseTypeDao.create(newExpenseType));
+                } catch (SQLException e) {
+                     mSqlException = e;
+                }
+                return  newExpenseType;
+            }
+
+            @Override
+            protected void onPostExecute(ExpenseType expenseType) {
+                if (mSqlException != null){
+                    mSqlException.printStackTrace();
+                    mActivity.Finish(mSqlException.getMessage(),
+                            "New Expense Type was not created successfuly");
+                }else{
+                    mExpenseTypeAdapter.add(expenseType);
+                    mExpenseTypeSpinner.setSelection(mNextItemPosition);
+                }
+            }
+        }.execute();
+
+    }
+
+    public void OnAddNewCanceled() {
+        mExpenseTypeSpinner.setSelection(mLastItemPosition);
     }
 }

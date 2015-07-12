@@ -22,6 +22,7 @@ public class MainActivity extends BaseActivity {
 
     private final static String CHOSEN_USER = "com.parlakovi.petqjoro.ourbuget.CHOSEN_USER";
     public static final int REQUEST_CODE_ADD_EXPENSE_TYPE = 1001;
+    public static final String NEWLY_CREATED_EXPENSE_TYPE = "com.parlakovi.petqjoro.ourbuget.NEWLY_CREATED_USER";
     private UserSpinnerWithAddNewController mUserSelectSpinnerController;
     private Collection<ISaveInstanceStateHandler> childrenThatHaveInstanceStateHandlers = new ArrayList<>();
 
@@ -73,6 +74,15 @@ public class MainActivity extends BaseActivity {
                 }
                 else {
                     getUserSelectSpinnerController().OnAddNewCanceled();
+                }
+                break;
+            }
+            case REQUEST_CODE_ADD_EXPENSE_TYPE:{
+                if (resultCode == RESULT_OK){
+                    getExpenseTypeSpinnerController().OnAddNewSuccess(data, activity);
+                }
+                else {
+                    getExpenseTypeSpinnerController().OnAddNewCanceled();
                 }
                 break;
             }
