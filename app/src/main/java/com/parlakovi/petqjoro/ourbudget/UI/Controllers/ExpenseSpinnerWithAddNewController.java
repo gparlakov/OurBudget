@@ -45,7 +45,10 @@ public class ExpenseSpinnerWithAddNewController implements ISaveInstanceStateHan
 
     private void InitSpinner() {
         mExpenseTypeAdapter =
-                new SimpleTextArrayAdapter(mActivity, R.layout.simple_text_view_title, R.id.simple_text_view_title_firstTextView);
+                new SimpleTextArrayAdapter(mActivity,
+                        R.layout.simple_text_view_title,
+                        R.id.simple_text_view_title_firstTextView,
+                        false);
 
         mExpenseTypeSpinner.setAdapter(mExpenseTypeAdapter);
 
@@ -90,7 +93,7 @@ public class ExpenseSpinnerWithAddNewController implements ISaveInstanceStateHan
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                if (id == -1) {
+             /*   if (id == -1) {
 
                     Intent addUserIntent = new Intent(mActivity, addEditExpenseTypeActivity.class);
 
@@ -99,7 +102,7 @@ public class ExpenseSpinnerWithAddNewController implements ISaveInstanceStateHan
                     mNextItemPosition = position;
                 } else {
                     mLastItemPosition = position;
-                }
+                }*/
             }
 
             @Override

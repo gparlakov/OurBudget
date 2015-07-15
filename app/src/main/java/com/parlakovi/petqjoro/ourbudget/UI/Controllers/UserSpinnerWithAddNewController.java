@@ -45,7 +45,10 @@ public class UserSpinnerWithAddNewController implements ISaveInstanceStateHandle
 
     private void InitSpinner() {
         mUserSelectSpinnerAdapter =
-                new SimpleTextArrayAdapter(mActivity, R.layout.simple_text_view_title, R.id.simple_text_view_title_firstTextView);
+                new SimpleTextArrayAdapter(mActivity,
+                        R.layout.simple_text_view_title,
+                        R.id.simple_text_view_title_firstTextView,
+                        false);
 
         mUserSelectSpinner.setAdapter(mUserSelectSpinnerAdapter);
 

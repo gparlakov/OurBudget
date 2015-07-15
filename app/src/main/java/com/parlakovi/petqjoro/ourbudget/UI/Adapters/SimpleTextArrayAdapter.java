@@ -17,11 +17,14 @@ import java.util.Collection;
 public class SimpleTextArrayAdapter extends ArrayAdapter<IArrayAdapterItem> {
 
     private final int resourceIdForRow;
+    private final boolean mShowAddNew;
+
     private Collection<? extends IArrayAdapterItem> mCurrentCollection;
-    public SimpleTextArrayAdapter(Context context, int resourceIdForRow, int textViewResId) {
+    public SimpleTextArrayAdapter(Context context, int resourceIdForRow, int textViewResId, boolean showAddNew) {
         super(context, resourceIdForRow, textViewResId);
 
         this.resourceIdForRow = resourceIdForRow;
+        this.mShowAddNew = showAddNew;
     }
 
     @Override
@@ -64,7 +67,12 @@ public class SimpleTextArrayAdapter extends ArrayAdapter<IArrayAdapterItem> {
 
     @Override
     public int getCount() {
-        return (super.getCount() + 1);
+
+        int count = super.getCount();
+        if (mShowAddNew) {
+            count ++;
+        }
+        return count;
     }
 
     private View getWorkingView(final View convertView) {
@@ -135,5 +143,11 @@ public class SimpleTextArrayAdapter extends ArrayAdapter<IArrayAdapterItem> {
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         return this.getView(position, convertView, parent);
+    }
+
+    @Override
+    public void addAll(Collection<? extends IArrayAdapterItem> collection) {
+
+        super.addAll(collection);
     }
 }
